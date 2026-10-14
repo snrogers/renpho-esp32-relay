@@ -129,6 +129,11 @@ void render_frame(uint16_t *fb, const ui_model_t *model) {
     draw_centered(fb, 91, "Step onto", fg, 2);
     draw_centered(fb, 115, "the scale", fg, 2);
     draw_centered(fb, 150, "to pair this relay", fg, 1);
+  } else if (model->state == UI_ERROR) {
+    /* The relay cannot save measurements: do not invite a weigh-in or show a weight. */
+    draw_centered(fb, 91, "Readings", fg, 2);
+    draw_centered(fb, 115, "not saved", fg, 2);
+    draw_centered(fb, 150, "Keep a flash backup", fg, 1);
   } else if (model->has_weight) {
     unsigned lb_tenths = (unsigned)(((uint64_t)model->weight_grams * 1000000u + 22679618u) / 45359237u);
     snprintf(line, sizeof(line), "%u.%u", lb_tenths / 10, lb_tenths % 10);
@@ -148,6 +153,7 @@ void render_frame(uint16_t *fb, const ui_model_t *model) {
   draw_centered(fb, 209,
                 model->state == UI_SETUP     ? "Configure over USB"
                 : model->state == UI_PAIRING ? "Looking for R-MSC01"
+                : model->state == UI_ERROR   ? "See the firmware guide"
                                              : "Step onto the scale",
                 fg, 1);
   snprintf(line, sizeof(line), "%d locally queued", model->queued);

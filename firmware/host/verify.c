@@ -346,6 +346,17 @@ static void test_usb_and_render(void) {
            "pairing screen hides the stored weight");
     expect(memcmp(with_weight, fb, sizeof(fb)) != 0, "pairing screen differs from queued screen");
     expect(render_ppm(with_weight, "relay-pairing.ppm") == 0, "pairing ppm");
+    model.state = UI_ERROR;
+    model.has_weight = 1;
+    render_frame(with_weight, &model);
+    model.has_weight = 0;
+    render_frame(without_weight, &model);
+    expect(memcmp(with_weight, without_weight, sizeof(with_weight)) == 0,
+           "storage error screen hides the stored weight");
+    model.state = UI_LISTENING;
+    render_frame(fb, &model);
+    expect(memcmp(without_weight, fb, sizeof(fb)) != 0,
+           "storage error screen differs from listening screen");
   }
 }
 

@@ -35,8 +35,8 @@ These images come from the firmware renderer. The weight is an example.
 
 | Queued | Delivered | Storage error |
 | :----: | :-------: | :-----------: |
-| <img src="docs/screens/queued.png" width="172" alt="Queued screen: 165.3 lb, 75.00 kg, 1 locally queued"> | <img src="docs/screens/delivered.png" width="172" alt="Delivered screen: 165.3 lb, 75.00 kg, 0 locally queued"> | <img src="docs/screens/storage-error.png" width="172" alt="Storage error screen"> |
-| A measurement waits in the outbox for delivery. | The receiver accepted the measurement. | The relay cannot use its flash storage. |
+| <img src="docs/screens/queued.png" width="172" alt="Queued screen: 165.3 lb, 75.00 kg, 1 locally queued"> | <img src="docs/screens/delivered.png" width="172" alt="Delivered screen: 165.3 lb, 75.00 kg, 0 locally queued"> | <img src="docs/screens/storage-error.png" width="172" alt="Storage error screen: Readings not saved. Keep a flash backup. See the firmware guide"> |
+| A measurement waits in the outbox for delivery. | The receiver accepted the measurement. | The relay cannot use its flash storage and does not save measurements. |
 
 The [firmware guide](firmware/README.md#display-and-fault-checks) gives more data about these states.
 After a change to `firmware/core/render.c`, run `firmware/host/screens.py` to make the images again.
