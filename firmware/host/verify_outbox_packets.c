@@ -213,11 +213,11 @@ int verify_outbox_packets(void) {
       outbox_record_t sent = box.records[2];
       expect(outbox_enqueue(&box, &meas, &info, 12345, id) == ENQUEUE_ENRICHED,
              "enrichment while weight-only POST is in flight");
-      expect(!outbox_accept_http(&box, &sent, "recorded"),
+      expect(!outbox_accept_http(&box, &sent),
              "old weight-only ACK must not discard unsent raw packets");
       expect(outbox_queued_count(&box) == 1, "enriched reading remains queued");
       sent = box.records[2];
-      expect(outbox_accept_http(&box, &sent, "duplicate"), "full packet upload accepted");
+      expect(outbox_accept_http(&box, &sent), "full packet upload accepted");
       expect(outbox_queued_count(&box) == 0, "raw capture dequeues after its own ACK");
     }
   }
@@ -242,7 +242,7 @@ int verify_outbox_packets(void) {
              ENQUEUE_FULL,
            "full no delivered");
     expect(box.count == OUTBOX_CAP, "full count unchanged");
-    expect(outbox_accept_http(&box, &box.records[0], "recorded"), "ack one");
+    expect(outbox_accept_http(&box, &box.records[0]), "ack one");
     fill_packet(&meas, 0xfe, 3, 1, 0);
     expect(outbox_enqueue(&box, &meas, &info, 42, id) ==
              ENQUEUE_NEW,

@@ -34,6 +34,24 @@ class ConfigTest(unittest.TestCase):
     with self.assertRaisesRegex(flash.ToolError, "scaleAddress must be empty or a BLE MAC"):
       flash.validate_config({**VALID, "scaleAddress": "not-a-mac"})
 
+  def test_receiver_url_is_any_http_endpoint(self):
+    for url in (
+      "http://192.0.2.10:8080/api/scale-readings",
+      "https://hooks.example.com/relay/a1b2",
+      "https://example.com/hook?token=abc&to=me@example.com",
+    ):
+      self.assertEqual(flash.validate_config({**VALID, "receiverUrl": url})["receiverUrl"], url)
+
+  def test_rejects_receiver_url_credentials_fragment_and_scheme(self):
+    for url, message in (
+      ("http://user:pw@host/hook", "credentials"),
+      ("http://host/hook#part", "fragment"),
+      ("ftp://host/hook", "http\\(s\\) URL"),
+      ("http:///hook", "missing a host"),
+    ):
+      with self.assertRaisesRegex(flash.ToolError, message):
+        flash.validate_config({**VALID, "receiverUrl": url})
+
   def test_rejects_missing_field(self):
     payload = dict(VALID)
     del payload["wifiSsid"]

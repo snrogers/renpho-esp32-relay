@@ -16,6 +16,16 @@ test("accepts a complete config and fills the optional scale address", () => {
   assert.equal(validateConfig({ ...VALID, wifiPassword: "" }).config.wifiPassword, "");
 });
 
+test("accepts any endpoint path and query", () => {
+  for (const receiverUrl of [
+    "http://192.0.2.10:8080/api/scale-readings",
+    "https://hooks.example.com/relay/a1b2",
+    "https://example.com/hook?token=abc&to=me@example.com",
+  ]) {
+    assert.equal(validateConfig({ ...VALID, receiverUrl }).config?.receiverUrl, receiverUrl);
+  }
+});
+
 test("drops fields the firmware does not take", () => {
   assert.equal("extra" in validateConfig({ ...VALID, extra: "x" }).config, false);
 });
@@ -31,9 +41,7 @@ test("rejects what flash.py rejects", () => {
     [{ ...VALID, receiverUrl: "ftp://host" }, "must be an http(s) URL"],
     [{ ...VALID, receiverUrl: "host:8080" }, "must be an http(s) URL"],
     [{ ...VALID, receiverUrl: "http://user:pw@host" }, "credentials"],
-    [{ ...VALID, receiverUrl: "http://host/?a=1" }, "query"],
     [{ ...VALID, receiverUrl: "http://host/#x" }, "fragment"],
-    [{ ...VALID, receiverUrl: "http://host/api/scale-readings/" }, "base URL"],
   ];
   for (const [input, message] of cases) {
     const { error } = validateConfig(input);

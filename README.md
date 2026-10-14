@@ -1,22 +1,22 @@
 # RENPHO ESP32 relay
 
-This project connects a RENPHO R-MSC01 scale to an HTTP receiver.
+This project connects a RENPHO R-MSC01 scale to a webhook.
 An ESP32 board gets scale data through Bluetooth Low Energy (BLE).
 The relay saves a final measurement before it sends an acknowledgment to the scale.
-It then sends the measurement through Wi-Fi.
+It then sends the measurement through Wi-Fi as a webhook: an HTTP `POST` with JSON, to a URL that you choose.
 
 The board shows weight in pounds and kilograms.
 The relay keeps the original scale packets, not only the weight.
 The repository includes a [reference receiver](#reference-receiver).
-You can also use your own HTTP service.
+You can also use your own HTTP service, or any webhook service that accepts JSON.
 The relay does not use the RENPHO cloud.
 
 ## Quick start
 
-1. Start the [reference receiver](#reference-receiver), or use your own HTTP service with `POST /api/scale-readings`.
+1. Start the [reference receiver](#reference-receiver), or get a webhook URL from your own service.
 2. Connect the board to a computer with a USB data cable.
 3. Open the [web installer](https://snrogers.github.io/renpho-esp32-relay/) in Chrome or Edge.
-4. In the installer, back up the board, install the firmware, and enter your Wi-Fi network and receiver URL.
+4. In the installer, back up the board, install the firmware, and enter your Wi-Fi network and webhook URL.
 5. Step onto the scale. The relay pairs with the scale and sends the measurement to the receiver.
 
 The installer needs no other software.
@@ -84,11 +84,12 @@ With a complete user profile, they calculate estimates without the phone applica
 | Packet               | A complete scale data message, after BLE frame assembly                     |
 | Receiver             | The HTTP service that accepts measurements from the relay                   |
 | Relay                | The firmware that operates on the ESP32 board                               |
+| Webhook              | An HTTP `POST` that the relay sends to the receiver URL for a measurement   |
 
 ## Data flow
 
 ```text
-RENPHO scale --BLE--> ESP32 relay --HTTP(S)--> Receiver
+RENPHO scale --BLE--> ESP32 relay --webhook--> Receiver
                          |
                          +--> Local outbox and LCD
 
@@ -100,7 +101,11 @@ RENPHO scale --BLE--> Computer tools --> Capture file
 The outbox has 16 record slots.
 The relay can replace a delivered record to make space for a new measurement.
 It does not replace an undelivered record to accept a new measurement.
-The receiver must accept repeated requests without duplicate measurements.
+Any HTTP `2xx` response tells the relay that the receiver has the measurement.
+Other responses keep the record in the outbox, and the relay tries again.
+The receiver can get the same measurement more than once.
+Use `eventId` to find and ignore repeated measurements.
+The [firmware guide](firmware/README.md#receiver-interface) gives the request and response.
 
 Full recordings include device-information and measurement packets.
 The measurement data includes weight and impedance channels.
@@ -121,6 +126,7 @@ Keep these files private.
 Do not attach them to public issues or commits.
 
 The firmware sends no HTTP authentication header.
+If the receiver needs a token, put it in the URL path or query.
 Use a receiver and network that you control.
 A plain HTTP connection does not encrypt measurements.
 The firmware includes the ESP-IDF certificate bundle for HTTPS connections.
@@ -157,7 +163,7 @@ It can also calculate body-composition estimates from the stored packets.
    uv run --python 3.12 --script receiver.py serve --port 8080
    ```
 
-2. Set `receiverUrl` in the relay configuration to `http://COMPUTER_ADDRESS:8080`.
+2. Set `receiverUrl` in the relay configuration to `http://COMPUTER_ADDRESS:8080/api/scale-readings`.
 3. Open `http://COMPUTER_ADDRESS:8080/` in a browser to see the measurements.
 4. To print the measurements in a terminal, use this command:
 

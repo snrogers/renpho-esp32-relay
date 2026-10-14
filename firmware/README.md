@@ -73,7 +73,7 @@ Flash backups can also contain this password and measurement data.
    ```json
    {
      "deviceId":     "example-relay-1",
-     "receiverUrl":  "http://192.0.2.10:8080",
+     "receiverUrl":  "http://192.0.2.10:8080/api/scale-readings",
      "wifiSsid":     "example-wlan",
      "wifiPassword": "example-passphrase"
    }
@@ -102,14 +102,14 @@ It ignores `command`.
 | Field          | Maximum length  | Format                                            |
 | -------------- | --------------- | ------------------------------------------------- |
 | `deviceId`     | 128 UTF-8 bytes | ASCII letters, digits, `.`, `_`, `:`, or `-`      |
-| `receiverUrl`  | 256 UTF-8 bytes | Base URL with `http` or `https`                   |
+| `receiverUrl`  | 256 UTF-8 bytes | Full `http` or `https` URL of the webhook         |
 | `scaleAddress` | 17 bytes        | Optional BLE address, such as `AA:BB:CC:DD:EE:FF` |
 | `wifiSsid`     | 32 UTF-8 bytes  | Wi-Fi network name                                |
 | `wifiPassword` | 64 UTF-8 bytes  | Wi-Fi password, or an empty string                |
 
-The URL must not contain credentials, a query, or a fragment.
-The firmware adds `/api/scale-readings` to the base URL.
-Do not include that endpoint in `receiverUrl`.
+The relay sends each measurement to this exact URL. It does not add a path.
+The URL can contain a path and a query, for example a token that the receiver requires.
+The URL must not contain credentials or a fragment.
 
 ## Save the current firmware
 
@@ -250,7 +250,7 @@ For HTTPS, use a server certificate that the ESP-IDF certificate bundle accepts.
 
 ### Request
 
-The relay sends `POST {receiverUrl}/api/scale-readings` with `Content-Type: application/json`.
+The relay sends `POST {receiverUrl}` with `Content-Type: application/json`.
 The request timeout is 8 seconds.
 The interval between retries starts at 2 seconds and doubles to 64 seconds.
 A saved success resets the interval to 2 seconds.
@@ -284,19 +284,17 @@ These values use the scale protocol units, not the LCD display units.
 
 ### Response
 
-A successful response has HTTP status `200` and one JSON object.
-The maximum response body length is 511 bytes.
-The object must contain these strings:
-
-| Field     | Accepted content                         |
-| --------- | ---------------------------------------- |
-| `eventId` | Same identifier as the request           |
-| `status`  | `recorded`, `duplicate`, or `superseded` |
-
-The relay ignores other keys.
-An incorrect status, mismatched identifier, invalid JSON, or body larger than 511 bytes keeps the record in the outbox.
-The relay saves the delivered state to flash after an accepted response.
+Any HTTP `2xx` status means that the receiver has the measurement.
+The relay does not read the response body.
+The relay then marks the record as delivered and saves that state to flash.
 If the relay cannot save that state, the record stays queued.
+
+Any other result keeps the record in the outbox, and the relay tries again.
+This includes no response, a timeout, a redirect, and a `4xx` or `5xx` status.
+
+**CAUTION:** The relay cannot tell your receiver from another server that sends `2xx`.
+A Wi-Fi login page or a different service at that URL can cause the relay to mark a measurement as delivered.
+Make sure that `receiverUrl` goes to your receiver.
 
 ## Display and fault checks
 

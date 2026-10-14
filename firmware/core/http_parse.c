@@ -366,82 +366,6 @@ static int finish_document(const char *p) {
   return *p == 0;
 }
 
-typedef struct {
-  char event_id[129];
-  char status[32];
-  int  have_event;
-  int  have_status;
-} json_ack_t;
-
-static int parse_object_ack(const char *json, json_ack_t *ack) {
-  const char *p     = skip_ws(json);
-  int         first = 1;
-
-  memset(ack, 0, sizeof(*ack));
-  if (!p || *p != '{') {
-    return 0;
-  }
-  p++;
-  p = skip_ws(p);
-  while (*p && *p != '}') {
-    char key[40];
-
-    if (!first) {
-      if (*p != ',') {
-        return 0;
-      }
-      p++;
-      p = skip_ws(p);
-      if (*p == '}') {
-        return 0;
-      }
-    }
-    first = 0;
-    if (!parse_string(&p, key, sizeof(key))) {
-      return 0;
-    }
-    p = skip_ws(p);
-    if (*p != ':') {
-      return 0;
-    }
-    p++;
-    p = skip_ws(p);
-    if (strcmp(key, "eventId") == 0) {
-      char value[129];
-      if (!parse_string(&p, value, sizeof(value))) {
-        return 0;
-      }
-      if (ack->have_event) {
-        return 0;
-      }
-      memcpy(ack->event_id, value, sizeof(ack->event_id));
-      ack->have_event = 1;
-    } else if (strcmp(key, "status") == 0) {
-      char value[32];
-      if (!parse_string(&p, value, sizeof(value))) {
-        return 0;
-      }
-      if (ack->have_status) {
-        return 0;
-      }
-      memcpy(ack->status, value, sizeof(ack->status));
-      ack->have_status = 1;
-    } else {
-      if (!skip_value(&p, 1)) {
-        return 0;
-      }
-    }
-    p = skip_ws(p);
-  }
-  if (*p != '}') {
-    return 0;
-  }
-  if (!finish_document(p + 1)) {
-    return 0;
-  }
-  return 1;
-}
-
 int http_extract_json_string(const char *json, const char *key, char *out, int out_len) {
   const char *p;
   int         first = 1;
@@ -509,23 +433,9 @@ int http_extract_json_string(const char *json, const char *key, char *out, int o
   return 1;
 }
 
-int http_response_accepts(int status_code, const char *body, const char *expect_event_id) {
-  json_ack_t ack;
-
-  if (status_code != 200 || !body || !expect_event_id) {
-    return 0;
-  }
-  if (!parse_object_ack(body, &ack)) {
-    return 0;
-  }
-  if (!ack.have_event || !ack.have_status) {
-    return 0;
-  }
-  if (strcmp(ack.event_id, expect_event_id) != 0) {
-    return 0;
-  }
-  return strcmp(ack.status, "recorded") == 0 || strcmp(ack.status, "duplicate") == 0 ||
-         strcmp(ack.status, "superseded") == 0;
+/* Any 2xx status means the receiver has the reading. The body is not read. */
+int http_response_accepts(int status_code) {
+  return status_code >= 200 && status_code <= 299;
 }
 
 static int json_text_ok(const char *s) {

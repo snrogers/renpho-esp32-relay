@@ -26,19 +26,22 @@ int validate_device_id(const char *value) {
   return id_charset_ok(value);
 }
 
+/* The relay posts to this exact URL: any path and query, but no credentials or fragment. */
 int validate_receiver_url(const char *value) {
-  const char *p;
+  const char *host;
+  size_t      host_len;
   if (!value) {
     return 0;
   }
   if (strncmp(value, "http://", 7) != 0 && strncmp(value, "https://", 8) != 0) {
     return 0;
   }
-  if (strchr(value, '@') || strchr(value, '?') || strchr(value, '#')) {
+  if (strchr(value, '#')) {
     return 0;
   }
-  p = strstr(value, "://");
-  if (!p || p[3] == 0 || p[3] == '/') {
+  host     = strstr(value, "://") + 3;
+  host_len = strcspn(host, "/?");
+  if (host_len == 0 || memchr(host, '@', host_len)) {
     return 0;
   }
   if (strlen(value) >= CFG_URL) {

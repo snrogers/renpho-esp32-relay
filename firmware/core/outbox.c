@@ -331,16 +331,10 @@ int outbox_find_sendable(const outbox_t *box, int *index) {
   return 0;
 }
 
-int outbox_accept_http(outbox_t *box, const outbox_record_t *sent, const char *status) {
+int outbox_accept_http(outbox_t *box, const outbox_record_t *sent) {
   int i;
-  int ok_status;
 
-  if (!box || !sent || !status) {
-    return 0;
-  }
-  ok_status = strcmp(status, "recorded") == 0 || strcmp(status, "duplicate") == 0 ||
-              strcmp(status, "superseded") == 0;
-  if (!ok_status) {
+  if (!box || !sent) {
     return 0;
   }
   for (i = 0; i < OUTBOX_CAP; i++) {

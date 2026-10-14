@@ -106,12 +106,8 @@ def validate_receiver_url(url: str) -> None:
     raise ToolError("receiverUrl is missing a host")
   if parsed.username is not None or parsed.password is not None:
     raise ToolError("receiverUrl must not contain credentials")
-  if parsed.query:
-    raise ToolError("receiverUrl must not contain a query")
-  if parsed.fragment:
+  if parsed.fragment or "#" in url:
     raise ToolError("receiverUrl must not contain a fragment")
-  if parsed.path.rstrip("/") == "/api/scale-readings":
-    raise ToolError("receiverUrl is a base URL; do not include /api/scale-readings")
 
 
 def validate_config(payload: dict[str, Any]) -> dict[str, str]:
@@ -458,7 +454,7 @@ def cmd_status(args: argparse.Namespace) -> int:
 FLASH_BYTES = 0x1000000
 SETUP_PROMPTS = (
     ("wifiSsid", "Wi-Fi network name (2.4 GHz)", ""),
-    ("receiverUrl", "Receiver URL, such as http://192.168.1.20:8080", ""),
+    ("receiverUrl", "Webhook URL, such as http://192.168.1.20:8080/api/scale-readings", ""),
     ("deviceId", "Relay name", "relay-1"),
     ("scaleAddress", "Scale address (Enter: pair with the first R-MSC01)", ""),
 )
@@ -612,7 +608,7 @@ def build_parser() -> argparse.ArgumentParser:
 Private config JSON (never pass Wi-Fi secrets on the command line):
   {
     "deviceId": "relay-1",
-    "receiverUrl": "http://192.0.2.10:8080",
+    "receiverUrl": "http://192.0.2.10:8080/api/scale-readings",
     "wifiSsid": "<ssid>",
     "wifiPassword": "<from file only>"
   }
@@ -633,7 +629,7 @@ marks a reading delivered. A full outbox refuses new readings rather than
 overwriting unsent ones. The relay keeps no clock; the receiver timestamps
 each reading when it arrives.
 
-receiverUrl is the receiver's base URL; firmware appends /api/scale-readings.
+receiverUrl is the full URL that the relay POSTs each reading to.
 scaleAddress is optional. Without it, the relay pairs with the first R-MSC01
 that sends a valid scale packet and keeps that address; status shows it.
 configure writes NVS and preserves the measurement outbox.

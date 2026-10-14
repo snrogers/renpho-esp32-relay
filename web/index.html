@@ -63,8 +63,8 @@ pre { background: var(--panel); border: 1px solid var(--line); border-radius: 10
       <input id="wifiSsid" name="wifiSsid" required maxlength="32">
       <label for="wifiPassword">Wi-Fi password</label>
       <input id="wifiPassword" name="wifiPassword" type="password" maxlength="64">
-      <label for="receiverUrl">Receiver URL <span>(for example http://192.168.1.20:8080)</span></label>
-      <input id="receiverUrl" name="receiverUrl" type="url" required placeholder="http://192.168.1.20:8080">
+      <label for="receiverUrl">Webhook URL <span>(the full address that gets each reading, for example http://192.168.1.20:8080/api/scale-readings)</span></label>
+      <input id="receiverUrl" name="receiverUrl" type="url" required placeholder="http://192.168.1.20:8080/api/scale-readings">
       <label for="deviceId">Relay name</label>
       <input id="deviceId" name="deviceId" required value="relay-1" pattern="[A-Za-z0-9._:\-]{1,128}">
       <label for="scaleAddress">Scale address <span>(optional: leave empty to pair with the first R-MSC01 scale)</span></label>

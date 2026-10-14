@@ -95,13 +95,13 @@ class SetupTest(unittest.TestCase):
   def test_invalid_settings_are_asked_again_and_the_password_can_be_kept(self):
     self.statuses = [{"event": "status", "wifiConnected": True, "scaleAddress": "AA:BB:CC:DD:EE:FF"}]
     code, output, _ = self.run_setup(
-      ["lan", "http://host/api/scale-readings", "", "not-a-mac",
-       "", "http://host:8080", "", "", "n", "y", ""],
+      ["lan", "http://host/hook#part", "", "not-a-mac",
+       "", "http://host:8080/hook?token=abc", "", "", "n", "y", ""],
       ["pw", ""],
     )
     self.assertEqual(code, 0)
     self.assertIn("Check the settings: scaleAddress must be empty or a BLE MAC", output)
-    self.assertEqual(self.calls[1][1]["receiverUrl"], "http://host:8080")
+    self.assertEqual(self.calls[1][1]["receiverUrl"], "http://host:8080/hook?token=abc")
     self.assertEqual(self.calls[1][1]["scaleAddress"], "")
     self.assertEqual(self.calls[1][1]["wifiPassword"], "pw")
     saved = self.home / "relay-config.json"

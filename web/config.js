@@ -45,11 +45,7 @@ function receiverUrlError(text) {
   if (url.protocol !== "http:" && url.protocol !== "https:") return "receiverUrl must be an http(s) URL";
   if (!url.hostname) return "receiverUrl is missing a host";
   if (url.username || url.password) return "receiverUrl must not contain credentials";
-  if (text.includes("?")) return "receiverUrl must not contain a query";
   if (text.includes("#")) return "receiverUrl must not contain a fragment";
-  if (url.pathname.replace(/\/+$/, "") === "/api/scale-readings") {
-    return "receiverUrl is a base URL; do not include /api/scale-readings";
-  }
   return null;
 }
 

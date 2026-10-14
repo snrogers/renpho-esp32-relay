@@ -210,31 +210,17 @@ static void test_outbox_replay(void) {
   expect(strcmp(id1, id2) == 0, "stable id");
   {
     expect(outbox_find_sendable(&box, &idx), "sendable");
-    expect(!http_response_accepts(200, "{\"eventId\":\"x\",\"status\":\"recorded\"}", id1),
-           "mismatch retain");
-    expect(!http_response_accepts(500, "{\"eventId\":\"x\",\"status\":\"recorded\"}", id1),
-           "500 retain");
-    expect(!http_response_accepts(200, "{\"eventId\":\"x\"}", id1), "ambiguous retain");
-    expect(!http_response_accepts(200,
-                                  "{\"nested\":{\"eventId\":\"x\",\"status\":\"recorded\"}}",
-                                  id1),
-           "nested reject");
-    expect(!http_response_accepts(200, "{\"eventId\":\"x\",\"status\":\"recorded\"", id1),
-           "truncated reject");
-    expect(!http_response_accepts(
-               200, "{\"eventId\":\"x\",\"status\":\"recorded\",\"eventId\":\"y\"}", id1),
-           "dup key reject");
-    expect(http_response_accepts(200,
-                                 "{\"eventId\":\"PLACE\",\"status\":\"duplicate\"}", id1) == 0,
-           "wrong id");
+    expect(http_response_accepts(200), "200 delivered");
+    expect(http_response_accepts(201), "201 delivered");
+    expect(http_response_accepts(204), "204 delivered");
+    expect(http_response_accepts(299), "299 delivered");
+    expect(!http_response_accepts(0), "no response retain");
+    expect(!http_response_accepts(199), "1xx retain");
+    expect(!http_response_accepts(301), "redirect retain");
+    expect(!http_response_accepts(404), "404 retain");
+    expect(!http_response_accepts(500), "500 retain");
     {
-      char body[256];
-      snprintf(body, sizeof(body),
-               "{\"eventId\":\"%s\",\"status\":\"recorded\",\"measuredOn\":\"2026-01-02\","
-               "\"weightPounds\":165.3}",
-               id1);
-      expect(http_response_accepts(200, body, id1), "accept recorded");
-      expect(outbox_accept_http(&box, &box.records[idx], "recorded"), "dequeue");
+      expect(outbox_accept_http(&box, &box.records[idx]), "dequeue");
       expect(outbox_queued_count(&box) == 0, "dequeued");
       expect(outbox_enqueue(&box, &p1, &info, 75000, id2) == ENQUEUE_DUP,
              "delivered retransmission stays acknowledged");
@@ -286,20 +272,6 @@ static void test_json_edges(void) {
   expect(!usb_parse_configure(dup_field, &cfg, err, sizeof(err)), "dup field");
   expect(!http_extract_json_string(tail, "command", cmd, sizeof(cmd)), "malformed tail");
   expect(!http_extract_json_string(nul_s, "command", cmd, sizeof(cmd)), "embedded nul");
-  expect(!http_response_accepts(200, "{\"eventId\":\"x\",\"status\":\"recorded\"}x", "x"),
-         "ack junk");
-  expect(!http_response_accepts(200, "{\"eventId\":\"x\",\"status\":true}", "x"),
-         "ack status type");
-  expect(http_response_accepts(
-             200, "{\"eventId\":\"x\",\"status\":\"recorded\",\"extra\":{\"eventId\":\"y\"}}",
-             "x"),
-         "nested extra ignored");
-  expect(!http_response_accepts(200, "{\"eventId\":\"x\",\"status\":\"recorded\",\"n\":01}",
-                               "x"),
-         "leading zero number");
-  expect(http_response_accepts(
-             200, "{\"eventId\":\"x\",\"status\":\"superseded\",\"n\":1.5e-2}", "x"),
-         "exponent number");
 }
 
 static void test_usb_and_render(void) {
@@ -316,6 +288,17 @@ static void test_usb_and_render(void) {
   expect(!usb_parse_configure("I (123) wifi: connected", &cfg, err, sizeof(err)),
          "survive log line");
   expect(!validate_receiver_url("http://user:pass@host"), "no creds in url");
+  expect(!validate_receiver_url("http://user@host/path"), "no user in url");
+  expect(!validate_receiver_url("http://host/path#part"), "no fragment in url");
+  expect(!validate_receiver_url("http:///path"), "url needs a host");
+  expect(!validate_receiver_url("http://"), "url needs a host after the scheme");
+  expect(!validate_receiver_url("ftp://host"), "url needs http or https");
+  expect(validate_receiver_url("http://192.0.2.10:8080"), "url without a path");
+  expect(validate_receiver_url("http://192.0.2.10:8080/api/scale-readings"), "url with the reference path");
+  expect(validate_receiver_url("https://hooks.example.com/relay/a1b2"), "url with any path");
+  expect(validate_receiver_url("https://example.com/hook?token=abc&to=me@example.com"),
+         "url with a query, even with @ in it");
+  expect(validate_receiver_url("http://host?token=abc"), "query without a path");
   expect(validate_scale_address(""), "empty scale address means auto-pair");
   expect(validate_scale_address("AA:bb:CC:dd:EE:ff"), "mac scale address");
   expect(!validate_scale_address("AA:BB:CC:DD:EE"), "short scale address");

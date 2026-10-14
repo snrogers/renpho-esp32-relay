@@ -53,7 +53,7 @@ enqueue_result_t outbox_enqueue(outbox_t *box, const packet_t *measurement,
 int outbox_restore(outbox_t *box, const void *blob, size_t length);
 
 int outbox_find_sendable(const outbox_t *box, int *index);
-int outbox_accept_http(outbox_t *box, const outbox_record_t *sent, const char *status);
+int outbox_accept_http(outbox_t *box, const outbox_record_t *sent);
 int outbox_queued_count(const outbox_t *box);
 const outbox_record_t *outbox_latest(const outbox_t *box);
 
