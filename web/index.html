@@ -53,8 +53,9 @@ pre { background: var(--panel); border: 1px solid var(--line); border-radius: 10
   <p class="muted">Connect the board with a USB data cable. Each button asks you to select its port. Everything happens in this browser: the page sends your settings only to the board, over USB.</p>
 
   <section>
-    <h2>1. Back up the board</h2>
-    <p>Before the first installation, save the current flash contents (16 MB). This takes a few minutes. Keep the file private.</p>
+    <h2>1. Back up the board <span class="muted">(optional)</span></h2>
+    <p>Saves the current flash contents (16 MB) to a file, so you can put the original firmware back later. You can skip this step and go to step 2.</p>
+    <p class="warn">This takes 15 minutes or more. Keep the board connected until it finishes. Keep the file private: it can contain your Wi-Fi password.</p>
     <button id="backup" type="button">Back up</button>
     <div class="activity" id="backup-activity" aria-live="polite" hidden><p class="phase"></p><progress></progress><p class="detail muted"></p></div>
   </section>

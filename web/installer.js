@@ -106,7 +106,7 @@ async function backup(ui) {
   let image;
   await withLoader(port, ui, 2, async (loader) => {
     ui.step(3, "Read the flash");
-    log("Reading all 16 MB of flash. This takes a few minutes.");
+    log("Reading all 16 MB of flash. This takes 15 minutes or more.");
     image = await loader.readFlash(0, FLASH_BYTES, (_packet, done, total) => ui.amount(done / total, total));
   });
   ui.step(4, "Save the file");

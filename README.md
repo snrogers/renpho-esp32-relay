@@ -16,7 +16,8 @@ The relay does not use the RENPHO cloud.
 1. Start the [reference receiver](#reference-receiver), or get a webhook URL from your own service.
 2. Connect the board to a computer with a USB data cable.
 3. Open the [web installer](https://snrogers.github.io/renpho-esp32-relay/) in Chrome or Edge.
-4. In the installer, back up the board, install the firmware, and enter your Wi-Fi network and webhook URL.
+4. In the installer, install the firmware and enter your Wi-Fi network and webhook URL.
+   The backup step is optional and takes 15 minutes or more.
 5. Step onto the scale. The relay pairs with the scale and sends the measurement to the receiver.
 
 The installer needs no other software.
@@ -118,7 +119,8 @@ Do not use these results as a substitute for medical care.
 Obey the scale manufacturer's safety instructions.
 
 **CAUTION:** Firmware installation replaces the program on the board.
-Save a complete flash backup before installation.
+A complete flash backup is optional, but without one you cannot put the original firmware back.
+A backup takes 15 minutes or more.
 The [firmware guide](firmware/README.md#save-the-current-firmware) gives the backup procedure.
 
 **CAUTION:** Captures and flash backups can contain personal measurements or Wi-Fi passwords.
