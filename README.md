@@ -279,7 +279,7 @@ firmware/host/verify
 node --test web/config.test.mjs
 ```
 
-GitHub Actions runs these checks and compiles the firmware for each push and pull request.
+GitHub Actions runs these checks and compiles the firmware for each push to `main` and each pull request.
 
 The calculation checks use complete inline reference measurements and results.
 They do not require captures, an APK, a native library, or third-party packages.
