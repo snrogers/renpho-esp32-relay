@@ -26,7 +26,7 @@ jobs:
         run: >-
           uv run --python 3.12 python -m unittest
           test_morphoscan_protocol test_morphoscan_body test_flash_config
-          test_flash_setup test_notice test_package_release test_receiver test_screens
+          test_flash_setup test_notice test_package_release test_readme test_receiver test_screens
       - name: Web installer checks
         run: node --test web/*.test.mjs
 

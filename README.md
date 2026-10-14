@@ -22,7 +22,6 @@ The relay does not use the RENPHO cloud.
 
 The installer needs no other software.
 To install from a terminal instead, use `firmware/flash.py setup`, as given in the [firmware guide](firmware/README.md#guided-setup).
-To record scale data with a computer, use the [computer tools](#computer-tools).
 
 ## Relay screens
 
@@ -49,7 +48,7 @@ After a change to `firmware/core/render.c`, run `firmware/host/screens.py` to ma
 | Install the relay from a browser     | [Web installer](https://snrogers.github.io/renpho-esp32-relay/) |
 | Install and configure the relay      | [Firmware guide](firmware/README.md)                            |
 | Receive and view measurements        | [Reference receiver](#reference-receiver)                       |
-| Record scale data with a computer    | [Computer tools](#computer-tools)                               |
+| Record scale data with a computer    | [Advanced: computer tools](#advanced-computer-tools)            |
 | Calculate body-composition estimates | [Local calculations](#local-calculations)                       |
 | Print and install a backplate        | [Backplate guide](cad/README.md)                                |
 
@@ -190,7 +189,42 @@ The database contains personal measurements. Keep it private.
 A measurement that waited in the relay outbox gets the time of its delivery.
 `GET /api/scale-readings` gives the stored measurements as JSON.
 
-## Computer tools
+## Software checks
+
+The protocol checks do not use Bluetooth or any vendor artifacts.
+
+```sh
+uv run --python 3.12 python -m unittest test_morphoscan_protocol test_flash_config test_flash_setup test_notice test_package_release test_readme test_receiver test_screens
+make -C firmware/host
+firmware/host/verify
+node --test web/*.test.mjs
+```
+
+GitHub Actions runs these checks and compiles the firmware for each push to `main` and each pull request.
+
+The calculation checks use complete inline reference measurements and results.
+They do not require captures, an APK, a native library, or third-party packages.
+
+```sh
+uv run --python 3.12 python -m unittest test_morphoscan_body
+```
+
+These checks do not replace a hardware check.
+The [backplate guide](cad/README.md) gives the limits of the geometry checks.
+
+## Releases
+
+A tag that starts with `v`, such as `v1.0.0`, makes a release.
+GitHub Actions then attaches `renpho-relay-firmware-VERSION.zip` to a GitHub release.
+It also publishes the web installer with that firmware to GitHub Pages.
+Before the first release, set the repository Pages source to GitHub Actions.
+
+## Advanced: computer tools
+
+You do not need these tools to use the relay.
+They connect a computer directly to the scale, decode the recordings, and calculate body-composition estimates.
+Use them to examine the scale protocol, to examine a different scale, or to calculate estimates from a recording.
+The `report` command of the [reference receiver](#reference-receiver) uses the same calculations.
 
 The live recorder uses the computer's Bluetooth adapter.
 The recorder checks the scale's manufacturer and model before it writes protocol data.
@@ -260,7 +294,7 @@ This mode labels measurements without calculating body-composition estimates.
 The Python output uses kilograms, centimeters, and ohms where applicable.
 Receiver software can convert these units for its display.
 
-## Local calculations
+### Local calculations
 
 The calculation tool contains a local Python implementation compatible with MorphoScan 1.9.8 / WLA37.
 It does not require the phone application, an APK, a native library, or Unicorn.
@@ -293,36 +327,6 @@ Vendor thresholds are category limits, not medical recommendations.
 Muscle, water, and protein quantities overlap.
 Do not add these quantities together.
 Segment percentages compare a segment with a vendor reference, not its tissue composition.
-
-## Software checks
-
-The protocol checks do not use Bluetooth or any vendor artifacts.
-
-```sh
-uv run --python 3.12 python -m unittest test_morphoscan_protocol test_flash_config test_flash_setup test_notice test_package_release test_receiver test_screens
-make -C firmware/host
-firmware/host/verify
-node --test web/*.test.mjs
-```
-
-GitHub Actions runs these checks and compiles the firmware for each push to `main` and each pull request.
-
-The calculation checks use complete inline reference measurements and results.
-They do not require captures, an APK, a native library, or third-party packages.
-
-```sh
-uv run --python 3.12 python -m unittest test_morphoscan_body
-```
-
-These checks do not replace a hardware check.
-The [backplate guide](cad/README.md) gives the limits of the geometry checks.
-
-## Releases
-
-A tag that starts with `v`, such as `v1.0.0`, makes a release.
-GitHub Actions then attaches `renpho-relay-firmware-VERSION.zip` to a GitHub release.
-It also publishes the web installer with that firmware to GitHub Pages.
-Before the first release, set the repository Pages source to GitHub Actions.
 
 ## Publication and license
 
