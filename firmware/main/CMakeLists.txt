@@ -1,0 +1,30 @@
+idf_component_register(
+  SRCS
+    "app_main.c"
+    "ble_scale.c"
+    "board_lcd.c"
+    "net_post.c"
+    "store.c"
+    "usb_console.c"
+    "../core/config_validate.c"
+    "../core/http_parse.c"
+    "../core/outbox.c"
+    "../core/protocol.c"
+    "../core/render.c"
+    "../core/sha256.c"
+    "../core/usb_line.c"
+  INCLUDE_DIRS
+    "."
+    "../core"
+  REQUIRES
+    bt
+    driver
+    esp_event
+    esp_http_client
+    esp_lcd
+    esp_netif
+    esp_timer
+    esp_wifi
+    mbedtls
+    nvs_flash
+)

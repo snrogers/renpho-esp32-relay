@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Monkey — simple spiral mark</title>
+  <desc id="desc">A single-color seated monkey with a smiling face and one curled tail. Transparent background.</desc>
+  <g fill="#905a32">
+    <!-- One continuous silhouette for the seated body and curled tail. -->
+    <path d="M370 464
+      C345 508 328 565 331 620
+      C292 635 277 666 287 697
+      C297 728 329 742 375 742
+      L536 742
+      C663 742 755 667 755 562
+      C755 484 709 439 650 439
+      C592 439 554 478 554 525
+      C554 569 585 596 621 596
+      C655 596 679 573 679 546
+      C679 532 669 521 656 521
+      C643 521 634 530 634 543
+      C634 550 629 555 620 555
+      C606 555 597 543 597 525
+      C597 500 619 481 649 481
+      C686 481 712 512 712 562
+      C712 644 641 699 548 699
+      L484 699
+      C514 677 528 650 526 616
+      C522 555 491 501 466 466Z"/>
+    <!-- The face is a true cutout, so the mark works on any background. -->
+    <path fill-rule="evenodd" d="M301 313
+      C282 295 247 303 239 331
+      C228 365 252 394 290 392
+      C303 451 351 490 413 490
+      C475 490 526 451 537 392
+      C574 395 600 367 590 333
+      C582 303 551 295 530 313
+      C513 259 469 229 415 229
+      C361 229 317 261 301 313Z
+      M329 354
+      C321 329 335 302 360 301
+      C382 300 397 312 414 327
+      C431 312 448 300 469 301
+      C495 303 507 329 500 354
+      C494 372 482 380 480 381
+      C492 398 487 423 469 438
+      C439 464 391 464 362 438
+      C342 421 338 398 350 381
+      C342 376 333 367 329 354Z"/>
+    <ellipse cx="375" cy="353" rx="12" ry="15"/>
+    <ellipse cx="455" cy="353" rx="12" ry="15"/>
+    <path d="M384 408 Q414 433 445 408" fill="none" stroke="#905a32" stroke-width="13" stroke-linecap="round"/>
+  </g>
+</svg>

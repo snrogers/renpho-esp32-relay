@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RENPHO Relay Installer</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Crect width=%2216%22 height=%2216%22 rx=%223%22 fill=%22%231f6feb%22/%3E%3C/svg%3E">
+<style>
+:root {
+  --bg: #f7f7f5; --panel: #ffffff; --text: #1c1c1a; --muted: #5f5f5a;
+  --line: #deded8; --accent: #1f6feb; --accent-text: #ffffff; --warn: #9a4d00;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141413; --panel: #1e1e1c; --text: #ececea; --muted: #a3a39d;
+    --line: #34342f; --accent: #4c8dff; --accent-text: #0b0b0a; --warn: #f0a050;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, sans-serif; }
+main { max-width: 44rem; margin: 0 auto; padding: 2rem 1rem 4rem; }
+h1 { font-size: 1.6rem; margin: 0 0 .25rem; }
+h2 { font-size: 1.1rem; margin: 0 0 .5rem; }
+p { margin: .25rem 0 .75rem; }
+.muted { color: var(--muted); }
+.warn { color: var(--warn); }
+section { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.1rem; margin: 1rem 0; }
+button { background: var(--accent); color: var(--accent-text); border: 0; border-radius: 7px; font: inherit; font-weight: 600; padding: .55rem 1rem; cursor: pointer; }
+button:disabled { opacity: .5; cursor: default; }
+label { display: block; font-weight: 600; margin: .6rem 0 .2rem; }
+label span { font-weight: 400; color: var(--muted); }
+input { width: 100%; font: inherit; padding: .5rem .6rem; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); color: var(--text); }
+form button { margin-top: .9rem; }
+progress { width: 100%; margin-top: 1rem; }
+pre { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: .8rem; min-height: 6rem; max-height: 18rem; overflow: auto; white-space: pre-wrap; word-break: break-word; font-size: .85rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>RENPHO relay installer</h1>
+  <p class="muted">Install and set up the relay on a Waveshare ESP32-S3-LCD-1.47 from this browser. Firmware version: <span id="version">loading</span>.</p>
+  <p id="unsupported" class="warn" hidden>This browser cannot use USB serial ports. Use Chrome or Edge on a computer.</p>
+  <p class="muted">Connect the board with a USB data cable. Each button asks you to select its port. Everything happens in this browser: the page sends your settings only to the board, over USB.</p>
+
+  <section>
+    <h2>1. Back up the board</h2>
+    <p>Before the first installation, save the current flash contents (16 MB). This takes a few minutes. Keep the file private.</p>
+    <button id="backup" type="button">Back up</button>
+  </section>
+
+  <section>
+    <h2>2. Install the firmware</h2>
+    <p>Writes the relay firmware. It does not erase the board, so an update keeps your settings and stored readings.</p>
+    <button id="install" type="button">Install</button>
+  </section>
+
+  <section>
+    <h2>3. Configure</h2>
+    <form id="config" autocomplete="off">
+      <label for="wifiSsid">Wi-Fi network <span>(2.4 GHz)</span></label>
+      <input id="wifiSsid" name="wifiSsid" required maxlength="32">
+      <label for="wifiPassword">Wi-Fi password</label>
+      <input id="wifiPassword" name="wifiPassword" type="password" maxlength="64">
+      <label for="receiverUrl">Receiver URL <span>(for example http://192.168.1.20:8080)</span></label>
+      <input id="receiverUrl" name="receiverUrl" type="url" required placeholder="http://192.168.1.20:8080">
+      <label for="deviceId">Relay name</label>
+      <input id="deviceId" name="deviceId" required value="relay-1" pattern="[A-Za-z0-9._:\-]{1,128}">
+      <label for="scaleAddress">Scale address <span>(optional: leave empty to pair with the first R-MSC01 scale)</span></label>
+      <input id="scaleAddress" name="scaleAddress" placeholder="AA:BB:CC:DD:EE:FF">
+      <button type="submit">Configure</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>4. Check the relay</h2>
+    <p>Shows whether the relay is configured, on Wi-Fi, and paired with a scale. Step onto the scale to pair it.</p>
+    <button id="status" type="button">Check status</button>
+  </section>
+
+  <progress id="progress" hidden></progress>
+  <pre id="log" aria-live="polite"></pre>
+</main>
+<script type="module" src="installer.js"></script>
+</body>
+</html>

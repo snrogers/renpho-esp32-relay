@@ -1,0 +1,13 @@
+*.apk
+*.so
+*.sqlite3
+.vendor/
+AGENTS.md
+__pycache__/
+captures/
+firmware/**/build*/
+firmware/host/verify
+firmware/managed_components/
+firmware/sdkconfig
+firmware/sdkconfig.old
+relay-*.ppm

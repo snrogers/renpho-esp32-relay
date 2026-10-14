@@ -1,0 +1,25 @@
+The Unlicense in LICENSE applies to every file in this repository except
+the monkey artwork and the files that contain it:
+
+  cad/monkey-logo.svg
+  cad/esp32-backplate-monkey.stl
+  cad/esp32-backplate-monkey-plated.3mf
+  cad/esp32-backplate-monkey.png
+
+Copyright (c) 2026 Sebastian Rogers. All rights reserved, except as follows.
+
+You may use these files to print engraved backplates for your own use, and
+use the printed backplates. You may copy these files unmodified as part of
+a copy or fork of this repository.
+
+No other use of the monkey artwork is permitted. In particular, you may not
+modify it, use it on other objects or in other works, or use it as a logo
+or mark.
+
+The plain backplate (cad/esp32-backplate.*) and the OpenSCAD source of the
+engraved variant (cad/esp32-backplate-monkey.scad) are under the Unlicense.
+For a different engraving, supply your own artwork in place of
+cad/monkey-logo.svg.
+
+This repository grants no license for the RENPHO phone application or its
+calculation library.
