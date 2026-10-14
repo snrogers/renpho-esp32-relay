@@ -28,7 +28,7 @@ jobs:
           test_morphoscan_protocol test_morphoscan_body test_flash_config
           test_flash_setup test_notice test_package_release test_receiver test_screens
       - name: Web installer checks
-        run: node --test web/config.test.mjs
+        run: node --test web/*.test.mjs
 
   build:
     needs: check
@@ -86,7 +86,7 @@ jobs:
       - name: Assemble the web installer
         run: |
           mkdir site
-          cp web/index.html web/installer.js web/config.js site/
+          cp web/index.html web/*.js site/
           cp -r dist/firmware site/firmware
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

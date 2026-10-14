@@ -300,7 +300,7 @@ The protocol checks do not use Bluetooth or any vendor artifacts.
 uv run --python 3.12 python -m unittest test_morphoscan_protocol test_flash_config test_flash_setup test_notice test_package_release test_receiver test_screens
 make -C firmware/host
 firmware/host/verify
-node --test web/config.test.mjs
+node --test web/*.test.mjs
 ```
 
 GitHub Actions runs these checks and compiles the firmware for each push to `main` and each pull request.

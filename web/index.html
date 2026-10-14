@@ -8,13 +8,13 @@
 <style>
 :root {
   --bg: #f7f7f5; --panel: #ffffff; --text: #1c1c1a; --muted: #5f5f5a;
-  --line: #deded8; --accent: #1f6feb; --accent-text: #ffffff; --warn: #9a4d00;
+  --line: #deded8; --accent: #1f6feb; --accent-text: #ffffff; --warn: #9a4d00; --ok: #1a7f37;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #141413; --panel: #1e1e1c; --text: #ececea; --muted: #a3a39d;
-    --line: #34342f; --accent: #4c8dff; --accent-text: #0b0b0a; --warn: #f0a050;
+    --line: #34342f; --accent: #4c8dff; --accent-text: #0b0b0a; --warn: #f0a050; --ok: #4ac26b;
     color-scheme: dark;
   }
 }
@@ -33,7 +33,15 @@ label { display: block; font-weight: 600; margin: .6rem 0 .2rem; }
 label span { font-weight: 400; color: var(--muted); }
 input { width: 100%; font: inherit; padding: .5rem .6rem; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); color: var(--text); }
 form button { margin-top: .9rem; }
-progress { width: 100%; margin-top: 1rem; }
+.activity { margin-top: .9rem; padding: .6rem .8rem; border-left: 3px solid var(--accent); border-radius: 6px; background: var(--bg); }
+.activity[data-state="done"] { border-left-color: var(--ok); }
+.activity[data-state="failed"] { border-left-color: var(--warn); }
+.activity .phase { margin: 0; font-weight: 600; }
+.activity[data-state="done"] .phase { color: var(--ok); }
+.activity[data-state="failed"] .phase { color: var(--warn); }
+.activity progress { display: block; width: 100%; margin: .45rem 0 .1rem; }
+.activity progress[hidden] { display: none; }
+.activity .detail { margin: 0; font-size: .9rem; font-variant-numeric: tabular-nums; }
 pre { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: .8rem; min-height: 6rem; max-height: 18rem; overflow: auto; white-space: pre-wrap; word-break: break-word; font-size: .85rem; }
 </style>
 </head>
@@ -48,12 +56,14 @@ pre { background: var(--panel); border: 1px solid var(--line); border-radius: 10
     <h2>1. Back up the board</h2>
     <p>Before the first installation, save the current flash contents (16 MB). This takes a few minutes. Keep the file private.</p>
     <button id="backup" type="button">Back up</button>
+    <div class="activity" id="backup-activity" aria-live="polite" hidden><p class="phase"></p><progress></progress><p class="detail muted"></p></div>
   </section>
 
   <section>
     <h2>2. Install the firmware</h2>
     <p>Writes the relay firmware. It does not erase the board, so an update keeps your settings and stored readings.</p>
     <button id="install" type="button">Install</button>
+    <div class="activity" id="install-activity" aria-live="polite" hidden><p class="phase"></p><progress></progress><p class="detail muted"></p></div>
   </section>
 
   <section>
@@ -71,15 +81,16 @@ pre { background: var(--panel); border: 1px solid var(--line); border-radius: 10
       <input id="scaleAddress" name="scaleAddress" placeholder="AA:BB:CC:DD:EE:FF">
       <button type="submit">Configure</button>
     </form>
+    <div class="activity" id="config-activity" aria-live="polite" hidden><p class="phase"></p><progress></progress><p class="detail muted"></p></div>
   </section>
 
   <section>
     <h2>4. Check the relay</h2>
     <p>Shows whether the relay is configured, on Wi-Fi, and paired with a scale. Step onto the scale to pair it.</p>
     <button id="status" type="button">Check status</button>
+    <div class="activity" id="status-activity" aria-live="polite" hidden><p class="phase"></p><progress></progress><p class="detail muted"></p></div>
   </section>
 
-  <progress id="progress" hidden></progress>
   <pre id="log" aria-live="polite"></pre>
 </main>
 <script type="module" src="installer.js"></script>
