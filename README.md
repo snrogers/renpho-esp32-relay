@@ -23,6 +23,24 @@ The installer needs no other software.
 To install from a terminal instead, use `firmware/flash.py setup`, as given in the [firmware guide](firmware/README.md#guided-setup).
 To record scale data with a computer, use the [computer tools](#computer-tools).
 
+## Relay screens
+
+The board LCD shows the relay state, the latest weight, and the number of queued records.
+These images come from the firmware renderer. The weight is an example.
+
+| USB setup | Pairing | Listening |
+| :-------: | :-----: | :-------: |
+| <img src="docs/screens/setup.png" width="172" alt="USB setup screen: Configure over USB"> | <img src="docs/screens/pairing.png" width="172" alt="Pairing screen: Step onto the scale to pair this relay"> | <img src="docs/screens/listening.png" width="172" alt="Listening screen: Waiting for weight"> |
+| The relay has no configuration. | The relay has no scale address. Step onto the scale. | The relay waits for a measurement. |
+
+| Queued | Delivered | Storage error |
+| :----: | :-------: | :-----------: |
+| <img src="docs/screens/queued.png" width="172" alt="Queued screen: 165.3 lb, 75.00 kg, 1 locally queued"> | <img src="docs/screens/delivered.png" width="172" alt="Delivered screen: 165.3 lb, 75.00 kg, 0 locally queued"> | <img src="docs/screens/storage-error.png" width="172" alt="Storage error screen"> |
+| A measurement waits in the outbox for delivery. | The receiver accepted the measurement. | The relay cannot use its flash storage. |
+
+The [firmware guide](firmware/README.md#display-and-fault-checks) gives more data about these states.
+After a change to `firmware/core/render.c`, run `firmware/host/screens.py` to make the images again.
+
 ## Select a guide
 
 | Task                                 | Guide                                                           |
@@ -273,7 +291,7 @@ Segment percentages compare a segment with a vendor reference, not its tissue co
 The protocol checks do not use Bluetooth or any vendor artifacts.
 
 ```sh
-uv run --python 3.12 python -m unittest test_morphoscan_protocol test_flash_config test_flash_setup test_notice test_package_release test_receiver
+uv run --python 3.12 python -m unittest test_morphoscan_protocol test_flash_config test_flash_setup test_notice test_package_release test_receiver test_screens
 make -C firmware/host
 firmware/host/verify
 node --test web/config.test.mjs

@@ -301,6 +301,7 @@ If the relay cannot save that state, the record stays queued.
 ## Display and fault checks
 
 The display states include `USB setup`, `Pairing`, `Listening`, `Queued`, `Delivered`, and `Storage error`.
+The [main guide](../README.md#relay-screens) shows an image of each state.
 `Pairing` means that the relay has no scale address. It tells you to step onto the scale, and it does not show a stored weight.
 `Delivered` means the receiver accepted the record.
 It does not mean that the receiver calculated body composition.

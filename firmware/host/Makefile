@@ -6,8 +6,10 @@ CORE    = ../core/protocol.c ../core/outbox.c ../core/render.c ../core/sha256.c 
 HEADERS = $(wildcard ../core/*.h)
 TESTS   = verify.c verify_outbox_packets.c verify_upload_packets.c
 .PHONY: all clean
-all: verify
+all: verify screens
 verify: $(TESTS) $(CORE) $(HEADERS)
 >  $(CC) $(CFLAGS) -o $@ $(TESTS) $(CORE)
+screens: screens.c ../core/render.c ../core/render.h
+>  $(CC) $(CFLAGS) -o $@ screens.c ../core/render.c
 clean:
->  rm -f verify
+>  rm -f verify screens
