@@ -5,6 +5,9 @@
 
 enum { LCD_W = 172, LCD_H = 320 };
 
+/* How long the Delivered screen stays before the relay waits for the next measurement. */
+enum { RESULT_MS = 30000 };
+
 typedef enum {
   UI_SETUP = 0,
   UI_ERROR,
@@ -22,7 +25,8 @@ typedef struct {
   int         backlight_dim;
 } ui_model_t;
 
-void render_frame(uint16_t *fb, const ui_model_t *model);
-int  render_ppm(const uint16_t *fb, const char *path);
+ui_state_t ui_after_idle(ui_state_t state, uint32_t idle_ms);
+void       render_frame(uint16_t *fb, const ui_model_t *model);
+int        render_ppm(const uint16_t *fb, const char *path);
 
 #endif

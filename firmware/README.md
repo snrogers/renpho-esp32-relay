@@ -306,6 +306,8 @@ The [main guide](../README.md#relay-screens) shows an image of each state.
 `Storage error` means that the relay cannot save measurements. It does not show a stored weight. Use the `Storage error` procedure in the table.
 `Delivered` means the receiver accepted the record.
 It does not mean that the receiver calculated body composition.
+The relay shows `Delivered` for 30 seconds. Then it shows `Listening` and waits for the next measurement.
+`Listening` does not show a stored weight. `Queued` shows the weight until the receiver accepts the record.
 
 | Problem                 | Procedure                                                                                              |
 | ----------------------- | ------------------------------------------------------------------------------------------------------ |

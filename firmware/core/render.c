@@ -89,6 +89,10 @@ static void draw_centered(uint16_t *fb, int y, const char *text, uint16_t color,
   draw_text(fb, (LCD_W - (int)strlen(text) * 6 * scale) / 2, y, text, color, scale);
 }
 
+ui_state_t ui_after_idle(ui_state_t state, uint32_t idle_ms) {
+  return state == UI_DELIVERED && idle_ms >= RESULT_MS ? UI_LISTENING : state;
+}
+
 void render_frame(uint16_t *fb, const ui_model_t *model) {
   uint16_t bg = rgb(8, 12, 20);
   uint16_t fg = rgb(240, 240, 240);
@@ -134,7 +138,8 @@ void render_frame(uint16_t *fb, const ui_model_t *model) {
     draw_centered(fb, 91, "Readings", fg, 2);
     draw_centered(fb, 115, "not saved", fg, 2);
     draw_centered(fb, 150, "Keep a flash backup", fg, 1);
-  } else if (model->has_weight) {
+  } else if (model->has_weight && (model->state == UI_QUEUED || model->state == UI_DELIVERED)) {
+    /* Only a measurement in progress shows a weight. The waiting screens show none. */
     unsigned lb_tenths = (unsigned)(((uint64_t)model->weight_grams * 1000000u + 22679618u) / 45359237u);
     snprintf(line, sizeof(line), "%u.%u", lb_tenths / 10, lb_tenths % 10);
     draw_text(fb, (LCD_W - (int)strlen(line) * 24) / 2, 91, line, fg, 4);

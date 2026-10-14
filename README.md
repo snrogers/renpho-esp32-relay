@@ -31,12 +31,12 @@ These images come from the firmware renderer. The weight is an example.
 | USB setup | Pairing | Listening |
 | :-------: | :-----: | :-------: |
 | <img src="docs/screens/setup.png" width="172" alt="USB setup screen: Configure over USB"> | <img src="docs/screens/pairing.png" width="172" alt="Pairing screen: Step onto the scale to pair this relay"> | <img src="docs/screens/listening.png" width="172" alt="Listening screen: Waiting for weight"> |
-| The relay has no configuration. | The relay has no scale address. Step onto the scale. | The relay waits for a measurement. |
+| The relay has no configuration. | The relay has no scale address. Step onto the scale. | The relay waits for the next measurement. It shows no weight. |
 
 | Queued | Delivered | Storage error |
 | :----: | :-------: | :-----------: |
 | <img src="docs/screens/queued.png" width="172" alt="Queued screen: 165.3 lb, 75.00 kg, 1 locally queued"> | <img src="docs/screens/delivered.png" width="172" alt="Delivered screen: 165.3 lb, 75.00 kg, 0 locally queued"> | <img src="docs/screens/storage-error.png" width="172" alt="Storage error screen: Readings not saved. Keep a flash backup. See the firmware guide"> |
-| A measurement waits in the outbox for delivery. | The receiver accepted the measurement. | The relay cannot use its flash storage and does not save measurements. |
+| A measurement waits in the outbox for delivery. | The receiver accepted the measurement. After 30 seconds, the relay shows `Listening` again. | The relay cannot use its flash storage and does not save measurements. |
 
 The [firmware guide](firmware/README.md#display-and-fault-checks) gives more data about these states.
 After a change to `firmware/core/render.c`, run `firmware/host/screens.py` to make the images again.

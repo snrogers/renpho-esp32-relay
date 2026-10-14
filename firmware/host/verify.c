@@ -357,7 +357,19 @@ static void test_usb_and_render(void) {
     render_frame(fb, &model);
     expect(memcmp(without_weight, fb, sizeof(fb)) != 0,
            "storage error screen differs from listening screen");
+    model.has_weight = 1;
+    render_frame(with_weight, &model);
+    expect(memcmp(with_weight, fb, sizeof(fb)) == 0, "listening screen hides the stored weight");
+    model.state = UI_DELIVERED;
+    render_frame(with_weight, &model);
+    expect(memcmp(with_weight, fb, sizeof(fb)) != 0, "delivered screen shows the weight");
   }
+  expect(ui_after_idle(UI_DELIVERED, 0) == UI_DELIVERED, "delivered right after delivery");
+  expect(ui_after_idle(UI_DELIVERED, RESULT_MS - 1) == UI_DELIVERED, "delivered before the result time");
+  expect(ui_after_idle(UI_DELIVERED, RESULT_MS) == UI_LISTENING, "listening after the result time");
+  expect(ui_after_idle(UI_QUEUED, RESULT_MS * 10) == UI_QUEUED, "queued stays until delivery");
+  expect(ui_after_idle(UI_LISTENING, RESULT_MS) == UI_LISTENING, "listening stays listening");
+  expect(ui_after_idle(UI_SETUP, RESULT_MS) == UI_SETUP, "setup stays setup");
 }
 
 int main(void) {

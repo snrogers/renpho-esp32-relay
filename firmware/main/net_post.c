@@ -120,6 +120,8 @@ static void net_task(void *arg) {
       xSemaphoreTake(g_lock, portMAX_DELAY);
       if (outbox_accept_http(&g_outbox, &rec, status)) {
         if (store_save_outbox() == ESP_OK) {
+          /* Start the Delivered time before the LCD task can see the new state. */
+          board_lcd_activity();
           g_relay.ui = outbox_queued_count(&g_outbox) ? UI_QUEUED : UI_DELIVERED;
           persisted  = 1;
         } else {
@@ -129,7 +131,6 @@ static void net_task(void *arg) {
       }
       xSemaphoreGive(g_lock);
       if (persisted) {
-        board_lcd_activity();
         s_backoff_ms = 2000;
       } else {
         vTaskDelay(pdMS_TO_TICKS(s_backoff_ms));

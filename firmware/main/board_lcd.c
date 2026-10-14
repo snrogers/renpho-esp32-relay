@@ -209,7 +209,9 @@ void board_lcd_refresh(void) {
   }
 
   memset(&model, 0, sizeof(model));
+  last = atomic_load_explicit(&s_last_activity_ms, memory_order_relaxed);
   xSemaphoreTake(g_lock, portMAX_DELAY);
+  g_relay.ui   = ui_after_idle(g_relay.ui, now_ms() - last);
   model.state  = !g_relay.storage_ready                                ? UI_ERROR
                  : g_relay.configured && !g_relay.cfg.scale_address[0] ? UI_PAIRING
                                                                        : g_relay.ui;
@@ -223,7 +225,6 @@ void board_lcd_refresh(void) {
   }
   xSemaphoreGive(g_lock);
 
-  last = atomic_load_explicit(&s_last_activity_ms, memory_order_relaxed);
   model.backlight_dim = (uint32_t)(now_ms() - last) > DIM_MS;
   backlight(!model.backlight_dim);
 
